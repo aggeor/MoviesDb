@@ -45,10 +45,12 @@ struct MovieCard: View {
                     .foregroundColor(.white)
                     .font(.system(size: 16, weight: .medium, design: .rounded))
                     .lineLimit(1)
-                Text(movie.release_date ?? "")
-                    .foregroundColor(.white)
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .lineLimit(1)
+                if let releaseDate = movie.release_date{
+                    Text(formatDate(releaseDate))
+                        .foregroundColor(.white)
+                        .font(.system(size: 12, weight: .medium, design: .rounded))
+                        .lineLimit(1)
+                }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             .padding(.horizontal, 8)

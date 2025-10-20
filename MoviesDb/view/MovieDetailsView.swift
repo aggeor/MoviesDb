@@ -128,8 +128,8 @@ struct MovieDetailView: View {
             }
             
             HStack(spacing: 8) {
-                if let releaseDate = movie.release_date, !releaseDate.isEmpty {
-                    Text(releaseDate)
+                if let releaseDate = movie.release_date {
+                    Text(formatDate(releaseDate))
                 }
                 if let runtime = movie.runtime {
                     Text("• \(runtime) min")

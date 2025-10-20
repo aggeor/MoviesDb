@@ -4,15 +4,18 @@ import Combine
 @MainActor
 class MovieDetailViewModel: ObservableObject {
     @Published var movieDetail: MovieDetails?
-    @Published var isLoading = false
+    @Published var isLoadingDetails = false
+    @Published var isLoadingCredits = false
+    @Published var cast: [CastMember] = []
 
     func fetchDetails(for movieID: Int) async {
-        guard let url = URL(string: "https://api.themoviedb.org/3/movie/\(movieID)?api_key=\(apiKey)&language=en-US&append_to_response=credits") else {
+        guard let url = URL(string: "https://api.themoviedb.org/3/movie/\(movieID)?api_key=\(apiKey)&language=en-US") else {
             print("Invalid URL")
             return
         }
 
-        isLoading = true
+        isLoadingDetails = true
+        defer { isLoadingDetails = false }
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) else {
@@ -25,6 +28,28 @@ class MovieDetailViewModel: ObservableObject {
         } catch {
             print("Error fetching movie details:", error)
         }
-        isLoading = false
+    }
+    
+    func fetchCredits(for movieID: Int) async {
+        guard let url = URL(string: "https://api.themoviedb.org/3/movie/\(movieID)/credits?api_key=\(apiKey)&language=en-US") else {
+            print("Invalid URL")
+            return
+        }
+
+        isLoadingCredits = true
+        defer { isLoadingCredits = false }
+        do {
+            let (data, response) = try await URLSession.shared.data(from: url)
+            guard let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) else {
+                print("Server error")
+                return
+            }
+
+            
+            let decoded = try JSONDecoder().decode(Credits.self, from: data)
+            cast = decoded.cast
+        } catch {
+            print("Error fetching movie details:", error)
+        }
     }
 }

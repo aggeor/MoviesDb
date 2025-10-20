@@ -40,7 +40,7 @@ struct MovieDetailView: View {
                     Color.clear
                         .frame(height: headerHeight)
                     
-                    if viewModel.isLoading {
+                    if viewModel.isLoadingDetails {
                         ProgressView()
                             .tint(.white)
                             .frame(maxWidth: .infinity)
@@ -61,7 +61,7 @@ struct MovieDetailView: View {
         .ignoresSafeArea(edges: .top)
         .navigationBarBackButtonHidden(true)
         .task {
-            await viewModel.fetchDetails(for: movieID)
+            await fetchMovieData()
         }
         .toolbar{
             ToolbarItem(placement: .topBarLeading) {
@@ -70,6 +70,12 @@ struct MovieDetailView: View {
                     .padding(.top, 8) // adjust for safe area
             }
         }
+    }
+    
+    @MainActor
+    func fetchMovieData() async {
+        await viewModel.fetchDetails(for: movieID)
+        await viewModel.fetchCredits(for: movieID)
     }
     
     var backBtnView: some View {
@@ -153,6 +159,9 @@ struct MovieDetailView: View {
                 .foregroundColor(.white)
                 .font(.body)
                 .lineSpacing(4)
+            if !viewModel.cast.isEmpty {
+                castView(cast: viewModel.cast)
+            }
         }
         .padding(.horizontal, 20)
         .padding(.top, 24)
@@ -160,4 +169,56 @@ struct MovieDetailView: View {
         .background(.black)
         .cornerRadius(32)
     }
+    
+    func castView(cast: [CastMember]) -> some View {
+        VStack(alignment: .leading) {
+            Text("Cast")
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding(.bottom, 4)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(cast) { member in
+                        VStack(alignment: .center) {
+                            AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w185\(member.profile_path ?? "")")) { phase in
+                                switch phase {
+                                case .empty:
+                                    Color.gray
+                                        .frame(width: 100, height: 140)
+                                        .cornerRadius(8)
+                                case .success(let image):
+                                    image
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 100, height: 140)
+                                        .clipped()
+                                        .cornerRadius(8)
+                                case .failure:
+                                    Color.gray
+                                        .frame(width: 100, height: 140)
+                                        .cornerRadius(8)
+                                @unknown default:
+                                    EmptyView()
+                                }
+                            }
+
+                            Text(member.name ?? "")
+                                .font(.caption)
+                                .foregroundColor(.white)
+                                .frame(width: 100)
+                                .lineLimit(1)
+                            Text(member.character ?? "")
+                                .font(.caption2)
+                                .foregroundColor(.gray)
+                                .frame(width: 100)
+                                .lineLimit(1)
+                        }
+                    }
+                }
+            }
+        }
+        .padding(.vertical, 8)
+    }
+
 }

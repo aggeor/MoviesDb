@@ -18,18 +18,8 @@ struct MovieDetailView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            if let backdropPath = viewModel.movieDetail?.backdrop_path,
-               let url = URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath)") {
-                imageView(url: url)
-                    .frame(height: headerHeight)
-                    .frame(maxWidth: .infinity)
-                    .clipped()
-            } else {
-                Color.gray
-                    .frame(height: headerHeight)
-                    .frame(maxWidth: .infinity)
-            }
+        ZStack(alignment: .top) {
+            headerView
             
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 8) {
@@ -65,6 +55,46 @@ struct MovieDetailView: View {
     func fetchMovieData() async {
         await viewModel.fetchDetails(for: movieID)
         await viewModel.fetchCredits(for: movieID)
+    }
+    
+    var headerView: some View {
+        ZStack {
+            if let backdropPath = viewModel.movieDetail?.backdrop_path,
+               let url = URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath)") {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        placeholderHeader
+                    case .success(let image):
+                        image.resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .overlay(headerGradient)
+                    case .failure:
+                        placeholderHeader
+                    @unknown default:
+                        placeholderHeader
+                    }
+                }
+            } else {
+                placeholderHeader
+            }
+        }
+        .frame(width: UIScreen.main.bounds.width,height: headerHeight)
+        .clipped()
+    }
+
+    var placeholderHeader: some View {
+        Color.gray.overlay(headerGradient)
+    }
+
+    var headerGradient: some View {
+        LinearGradient(
+            gradient: Gradient(colors: [Color.black.opacity(0.0), Color.black]),
+            startPoint: .top,
+            endPoint: .bottom
+        )
+        .frame(height: 100)
+        .frame(maxHeight: .infinity, alignment: .bottom)
     }
     
     var backBtnView: some View {
@@ -149,6 +179,7 @@ struct MovieDetailView: View {
         .padding(.bottom, 40)
         .background(.black)
         .cornerRadius(32)
+        .frame(width: UIScreen.main.bounds.width)
     }
     
     func castView(cast: [CastMember]) -> some View {

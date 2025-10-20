@@ -8,10 +8,6 @@ struct MainView: View {
         GridItem(.flexible())
     ]
     
-    // Adjust frame for each movie card
-    let frameWidth = UIScreen.main.bounds.width / 2.38
-    let frameHeight = UIScreen.main.bounds.height / 3.87
-    
     // ViewModel
     @StateObject var mainViewModel: MainViewModel = MainViewModel()
     
@@ -70,43 +66,7 @@ struct MainView: View {
                     ScrollView {
                             LazyVGrid(columns: adaptiveColumns, spacing: 16) {
                                 ForEach(mainViewModel.movies, id: \.id) { movie in
-                                    VStack(spacing: 8) {
-                                        // Movie poster
-                                        if let posterPath = movie.poster_path,
-                                           let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
-                                            AsyncImage(url: url) { phase in
-                                                switch phase {
-                                                case .empty:
-                                                    ProgressView()
-                                                        .frame(width: frameWidth, height: frameHeight)
-                                                case .success(let image):
-                                                    image
-                                                        .resizable()
-                                                        .scaledToFill()
-                                                        .frame(width: frameWidth, height: frameHeight)
-                                                        .clipped()
-                                                        .cornerRadius(12)
-                                                case .failure:
-                                                    Color.gray
-                                                        .frame(width: frameWidth, height: frameHeight)
-                                                        .cornerRadius(12)
-                                                @unknown default:
-                                                    EmptyView()
-                                                }
-                                            }
-                                        } else {
-                                            Color.gray
-                                                .frame(width: frameWidth, height: frameHeight)
-                                                .cornerRadius(12)
-                                        }
-                                        
-                                        // Movie title
-                                        Text(movie.title ?? "")
-                                            .foregroundColor(.white)
-                                            .font(.system(size: 16, weight: .medium, design: .rounded))
-                                            .multilineTextAlignment(.center)
-                                            .lineLimit(2)
-                                    }
+                                    MovieCard(movie: movie)
                                     .onAppear {
                                         Task {
                                             await mainViewModel.fetchNextIfNeeded(currentMovie: movie)

@@ -61,9 +61,10 @@ class MainViewModel: ObservableObject {
                 return
             }
 
-            let movieWrapper = try JSONDecoder().decode(MovieDataWrapper.self, from: data)
+            var movieWrapper = try JSONDecoder().decode(MovieDataWrapper.self, from: data)
             totalPages = movieWrapper.total_pages
             movies.append(contentsOf: movieWrapper.results)
+            movies = movies.filter{$0.title != nil && $0.poster_path != nil}
             print("Fetched page \(page), total movies: \(movies.count)")
         } catch {
             print("Failed to fetch or decode movies:", error)

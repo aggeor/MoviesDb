@@ -35,6 +35,25 @@ struct MainView: View {
                                 await mainViewModel.search(searchText)
                             }
                         }
+                        .overlay(
+                                HStack {
+                                    Spacer()
+                                    if !searchText.isEmpty {
+                                        Button(action: {
+                                            searchText = ""
+                                            if mainViewModel.title != "Popular Movies"{
+                                                Task {
+                                                    await mainViewModel.search(nil) // reset to popular movies
+                                                }
+                                            }
+                                        }) {
+                                            Image(systemName: "xmark.circle.fill")
+                                                .foregroundColor(.gray)
+                                        }
+                                        .padding(.trailing, 24)
+                                    }
+                                }
+                            )
 
                     Text(mainViewModel.title)
                         .font(.title2)

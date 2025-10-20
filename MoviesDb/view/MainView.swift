@@ -66,12 +66,15 @@ struct MainView: View {
                     ScrollView {
                             LazyVGrid(columns: adaptiveColumns, spacing: 16) {
                                 ForEach(mainViewModel.movies, id: \.id) { movie in
-                                    MovieCard(movie: movie)
-                                    .onAppear {
-                                        Task {
-                                            await mainViewModel.fetchNextIfNeeded(currentMovie: movie)
-                                        }
+                                    NavigationLink(destination: MovieDetailView(movieID: movie.id)) {
+                                        MovieCard(movie: movie)
+                                            .onAppear {
+                                                Task {
+                                                    await mainViewModel.fetchNextIfNeeded(currentMovie: movie)
+                                                }
+                                            }
                                     }
+                                    .buttonStyle(PlainButtonStyle())
                                 }
                             }
                             .padding(.horizontal, 16)

@@ -59,7 +59,7 @@ class MainViewModel: ObservableObject {
                 return
             }
 
-            var movieWrapper = try JSONDecoder().decode(MovieDataWrapper.self, from: data)
+            let movieWrapper = try JSONDecoder().decode(MovieDataWrapper.self, from: data)
             totalPages = movieWrapper.total_pages
             movies.append(contentsOf: movieWrapper.results)
             movies = movies.filter { $0.title != nil && $0.poster_path != nil }

@@ -46,7 +46,8 @@ struct MovieDetailView: View {
         .task { await fetchMovieData() }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                backBtnView.padding(.top, 8)
+                backBtnView
+                    .tint(.white)
             }
         }
     }
@@ -100,10 +101,6 @@ struct MovieDetailView: View {
     var backBtnView: some View {
         Button(action: { dismiss() }) {
             Image(systemName: "chevron.left")
-                .foregroundColor(.white)
-                .padding(10)
-                .background(Color.black.opacity(0.6))
-                .clipShape(Circle())
         }
     }
     

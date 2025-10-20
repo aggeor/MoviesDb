@@ -131,12 +131,42 @@ struct MovieDetailView: View {
                 if let runtime = movie.runtime {
                     Text("• \(runtime) min")
                 }
-                if let rating = movie.vote_average {
-                    Text("• ⭐️ \(String(format: "%.1f", rating))")
+                if let rating = movie.vote_average, let voteCount = movie.vote_count {
+                    Text("• ⭐️ \(String(format: "%.1f", rating)) (\(voteCount))")
                 }
             }
             .font(.subheadline)
             .foregroundColor(.gray)
+            
+            
+            if let status = movie.status {
+                Text("\(status)")
+                    .font(.body)
+                    .foregroundColor(status=="Released" ? .green : .red)
+            }
+            
+            HStack(spacing: 8) {
+                NavigationLink(destination: WebView(url: "https://www.themoviedb.org/movie/\(movie.id)")){
+                    Text("TMDB")
+                        .font(.body)
+                        .padding(4)
+                        .foregroundColor(.white)
+                        .background(.blue.opacity(0.7))
+                        .cornerRadius(10)
+                }
+                
+                
+                if let imdbId = movie.imdb_id {
+                    NavigationLink(destination: WebView(url: "https://www.imdb.com/title/\(imdbId)")){
+                        Text("IMDb")
+                            .font(.body)
+                            .padding(4)
+                            .foregroundColor(.white)
+                            .background(.yellow.opacity(0.7))
+                            .cornerRadius(10)
+                    }
+                }
+            }
             
             Divider().background(Color.gray).padding(.vertical, 8)
             
@@ -145,6 +175,7 @@ struct MovieDetailView: View {
                 .font(.body)
                 .lineSpacing(4)
             
+            Divider().background(Color.gray).padding(.vertical, 8)
             if !viewModel.cast.isEmpty {
                 castView(cast: viewModel.cast)
             }

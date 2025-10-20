@@ -17,7 +17,7 @@ struct MainView: View {
         NavigationView {
             VStack(spacing: 0) {
                 
-                // MARK: Header with title and search
+                // MARK: Header with title, refresh button and search
                 VStack(spacing: 12) {
                     TextField("Search movies...", text: $searchText)
                         .padding(10)
@@ -47,12 +47,23 @@ struct MainView: View {
                             }
                         )
                     
-                    Text(mainViewModel.title)
-                        .font(.title2)
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 16)
-                    
+                    HStack {
+                        Text(mainViewModel.title)
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        Button(action: {
+                            Task {
+                                await mainViewModel.search(searchText.isEmpty ? nil : searchText)
+                            }
+                        }) {
+                            Image(systemName: "arrow.clockwise")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .padding(.horizontal, 16)
                 }
                 .padding(.vertical, 12)
                 .background(Color.black)

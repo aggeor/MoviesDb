@@ -3,6 +3,8 @@ import Foundation
 struct MovieDataWrapper: Decodable {
     let page: Int?
     let results: [Movie]
+    let total_pages: Int
+    let total_results: Int?
 }
 
 struct Movie: Hashable, Codable{

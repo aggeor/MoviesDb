@@ -85,6 +85,11 @@ struct MainView: View {
                                     .multilineTextAlignment(.center)
                                     .lineLimit(2)
                             }
+                            .onAppear {
+                                    Task {
+                                        await mainViewModel.fetchNextIfNeeded(currentMovie: movie)
+                                    }
+                                }
                         }
                     }
                     .padding(.horizontal, 16)

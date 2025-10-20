@@ -61,14 +61,24 @@ struct MainView: View {
                             Image(systemName: "arrow.clockwise")
                                 .font(.title2)
                                 .foregroundColor(.white)
+                                .opacity(mainViewModel.isLoading ? 0.5 : 1)
                         }
+                        .disabled(mainViewModel.isLoading) // prevent tapping while loading
                     }
                     .padding(.horizontal, 16)
                 }
                 .padding(.vertical, 12)
                 .background(Color.black)
                 
-                if mainViewModel.movies.isEmpty {
+                if mainViewModel.isLoading{
+                    ZStack{
+                        Color.black
+                            .edgesIgnoringSafeArea(.all)
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(1.5)
+                    }
+                } else if mainViewModel.movies.isEmpty {
                     VStack(spacing: 0) {
                         Text("No movies found")
                             .font(.title3)

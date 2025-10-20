@@ -9,7 +9,7 @@ class MainViewModel: ObservableObject {
     var lastSearchText: String? = nil
     private var currentPage = 1
     private var totalPages = 1
-    private var isLoading = false
+    var isLoading = false
     private var searchQuery: String? = nil
 
     func search(_ query: String?) async {

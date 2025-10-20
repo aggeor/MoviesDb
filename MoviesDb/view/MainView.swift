@@ -25,81 +25,97 @@ struct MainView: View {
                 // MARK: Header with title and search
                 VStack(spacing: 12) {
                     
-                    // Search Field
                     TextField("Search movies...", text: $searchText)
                         .padding(10)
                         .background(Color(.systemGray6))
                         .cornerRadius(10)
                         .padding(.horizontal, 16)
                         .onSubmit {
-                            // TODO: Call search endpoint with searchText
-                            print("Search for: \(searchText)")
+                            Task {
+                                await mainViewModel.search(searchText)
+                            }
                         }
-                    Text("Popular Movies")
+
+                    Text(mainViewModel.title)
                         .font(.title2)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 16)
+
                 }
                 .padding(.vertical, 12)
                 .background(Color.black)
                 
-                // MARK: Movies ScrollView
-                ScrollView {
-                    LazyVGrid(columns: adaptiveColumns, spacing: 16) {
-                        ForEach(mainViewModel.movies, id: \.id) { movie in
-                            VStack(spacing: 8) {
-                                // Movie poster
-                                if let posterPath = movie.poster_path,
-                                   let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
-                                    AsyncImage(url: url) { phase in
-                                        switch phase {
-                                        case .empty:
-                                            ProgressView()
-                                                .frame(width: frameWidth, height: frameHeight)
-                                        case .success(let image):
-                                            image
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: frameWidth, height: frameHeight)
-                                                .clipped()
-                                                .cornerRadius(12)
-                                        case .failure:
+                if mainViewModel.movies.count != 0{
+                    // MARK: Movies ScrollView
+                    ScrollView {
+                            LazyVGrid(columns: adaptiveColumns, spacing: 16) {
+                                ForEach(mainViewModel.movies, id: \.id) { movie in
+                                    VStack(spacing: 8) {
+                                        // Movie poster
+                                        if let posterPath = movie.poster_path,
+                                           let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
+                                            AsyncImage(url: url) { phase in
+                                                switch phase {
+                                                case .empty:
+                                                    ProgressView()
+                                                        .frame(width: frameWidth, height: frameHeight)
+                                                case .success(let image):
+                                                    image
+                                                        .resizable()
+                                                        .scaledToFill()
+                                                        .frame(width: frameWidth, height: frameHeight)
+                                                        .clipped()
+                                                        .cornerRadius(12)
+                                                case .failure:
+                                                    Color.gray
+                                                        .frame(width: frameWidth, height: frameHeight)
+                                                        .cornerRadius(12)
+                                                @unknown default:
+                                                    EmptyView()
+                                                }
+                                            }
+                                        } else {
                                             Color.gray
                                                 .frame(width: frameWidth, height: frameHeight)
                                                 .cornerRadius(12)
-                                        @unknown default:
-                                            EmptyView()
+                                        }
+                                        
+                                        // Movie title
+                                        Text(movie.title ?? "")
+                                            .foregroundColor(.white)
+                                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                                            .multilineTextAlignment(.center)
+                                            .lineLimit(2)
+                                    }
+                                    .onAppear {
+                                        Task {
+                                            await mainViewModel.fetchNextIfNeeded(currentMovie: movie)
                                         }
                                     }
-                                } else {
-                                    Color.gray
-                                        .frame(width: frameWidth, height: frameHeight)
-                                        .cornerRadius(12)
                                 }
-                                
-                                // Movie title
-                                Text(movie.title ?? "")
-                                    .foregroundColor(.white)
-                                    .font(.system(size: 16, weight: .medium, design: .rounded))
-                                    .multilineTextAlignment(.center)
-                                    .lineLimit(2)
                             }
-                            .onAppear {
-                                    Task {
-                                        await mainViewModel.fetchNextIfNeeded(currentMovie: movie)
-                                    }
-                                }
-                        }
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 16)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 16)
+                    .background(Color.black.edgesIgnoringSafeArea(.all))
+                } else{
+                    VStack(spacing: 0){
+                        Text("No movies found")
+                            .font(.title3)
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 16)
+                        Spacer()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.black)
                 }
-                .background(Color.black.edgesIgnoringSafeArea(.all))
             }
             .navigationBarHidden(true)
             .task {
-                await mainViewModel.fetchFirst()
+                await mainViewModel.search(nil)
             }
         }
     }

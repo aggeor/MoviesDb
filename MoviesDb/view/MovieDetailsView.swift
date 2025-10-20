@@ -59,8 +59,8 @@ struct MovieDetailView: View {
     
     var headerView: some View {
         ZStack {
-            if let backdropPath = viewModel.movieDetail?.backdrop_path,
-               let url = URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath)") {
+            if let imagePath = viewModel.movieDetail?.backdrop_path ?? viewModel.movieDetail?.poster_path,
+               let url = URL(string: "https://image.tmdb.org/t/p/w780\(imagePath)") {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
@@ -68,7 +68,6 @@ struct MovieDetailView: View {
                     case .success(let image):
                         image.resizable()
                             .aspectRatio(contentMode: .fill)
-                            .overlay(headerGradient)
                     case .failure:
                         placeholderHeader
                     @unknown default:
@@ -80,11 +79,12 @@ struct MovieDetailView: View {
             }
         }
         .frame(width: UIScreen.main.bounds.width,height: headerHeight)
+        .overlay(headerGradient)
         .clipped()
     }
 
     var placeholderHeader: some View {
-        Color.gray.overlay(headerGradient)
+        Color.gray
     }
 
     var headerGradient: some View {
@@ -104,28 +104,6 @@ struct MovieDetailView: View {
                 .padding(10)
                 .background(Color.black.opacity(0.6))
                 .clipShape(Circle())
-        }
-    }
-    
-    func imageView(url: URL) -> some View {
-        AsyncImage(url: url) { phase in
-            switch phase {
-            case .empty: ProgressView()
-            case .success(let image):
-                image.resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .overlay(
-                        LinearGradient(
-                            gradient: Gradient(colors: [Color.black.opacity(0.0), Color.black]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .frame(height: 100)
-                        .frame(maxHeight: .infinity, alignment: .bottom)
-                    )
-            case .failure: Color.gray
-            @unknown default: EmptyView()
-            }
         }
     }
     

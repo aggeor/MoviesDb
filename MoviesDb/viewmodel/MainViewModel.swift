@@ -1,18 +1,19 @@
 import Foundation
 import Combine
 
-
 @MainActor
 class MainViewModel: ObservableObject {
     @Published var movies: [Movie] = []
     @Published var title: String = "Popular Movies"
 
+    var lastSearchText: String? = nil
     private var currentPage = 1
     private var totalPages = 1
     private var isLoading = false
     private var searchQuery: String? = nil
 
     func search(_ query: String?) async {
+        lastSearchText = query
         searchQuery = query?.trimmingCharacters(in: .whitespacesAndNewlines)
         currentPage = 1
         movies = []
@@ -27,12 +28,9 @@ class MainViewModel: ObservableObject {
     }
 
     func fetchNextIfNeeded(currentMovie: Movie) async {
-        guard let lastMovie = movies.last, currentMovie.id == lastMovie.id else { return }
-        await fetchNextPage()
-    }
-
-    private func fetchNextPage() async {
-        guard !isLoading, currentPage < totalPages else { return }
+        guard currentPage < totalPages else { return }
+        guard let lastMovie = movies.last, lastMovie.id == currentMovie.id else { return }
+        
         currentPage += 1
         await fetchMovies(page: currentPage)
     }
@@ -64,7 +62,7 @@ class MainViewModel: ObservableObject {
             var movieWrapper = try JSONDecoder().decode(MovieDataWrapper.self, from: data)
             totalPages = movieWrapper.total_pages
             movies.append(contentsOf: movieWrapper.results)
-            movies = movies.filter{$0.title != nil && $0.poster_path != nil}
+            movies = movies.filter { $0.title != nil && $0.poster_path != nil }
             print("Fetched page \(page), total movies: \(movies.count)")
         } catch {
             print("Failed to fetch or decode movies:", error)

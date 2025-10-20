@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct MainView: View {
-    
     // 2 columns grid
     private let adaptiveColumns = [
         GridItem(.flexible()),
@@ -20,7 +19,6 @@ struct MainView: View {
                 
                 // MARK: Header with title and search
                 VStack(spacing: 12) {
-                    
                     TextField("Search movies...", text: $searchText)
                         .padding(10)
                         .background(Color(.systemGray6))
@@ -32,57 +30,35 @@ struct MainView: View {
                             }
                         }
                         .overlay(
-                                HStack {
-                                    Spacer()
-                                    if !searchText.isEmpty {
-                                        Button(action: {
-                                            searchText = ""
-                                            if mainViewModel.title != "Popular Movies"{
-                                                Task {
-                                                    await mainViewModel.search(nil) // reset to popular movies
-                                                }
-                                            }
-                                        }) {
-                                            Image(systemName: "xmark.circle.fill")
-                                                .foregroundColor(.gray)
+                            HStack {
+                                Spacer()
+                                if !searchText.isEmpty {
+                                    Button(action: {
+                                        searchText = ""
+                                        Task {
+                                            await mainViewModel.search(nil)
                                         }
-                                        .padding(.trailing, 24)
+                                    }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundColor(.gray)
                                     }
+                                    .padding(.trailing, 24)
                                 }
-                            )
-
+                            }
+                        )
+                    
                     Text(mainViewModel.title)
                         .font(.title2)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 16)
-
+                    
                 }
                 .padding(.vertical, 12)
                 .background(Color.black)
                 
-                if mainViewModel.movies.count != 0{
-                    // MARK: Movies ScrollView
-                    ScrollView {
-                            LazyVGrid(columns: adaptiveColumns, spacing: 16) {
-                                ForEach(mainViewModel.movies, id: \.id) { movie in
-                                    NavigationLink(destination: MovieDetailView(movieID: movie.id)) {
-                                        MovieCard(movie: movie)
-                                            .onAppear {
-                                                Task {
-                                                    await mainViewModel.fetchNextIfNeeded(currentMovie: movie)
-                                                }
-                                            }
-                                    }
-                                    .buttonStyle(PlainButtonStyle())
-                                }
-                            }
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, 16)
-                    }
-                    .background(Color.black.edgesIgnoringSafeArea(.all))
-                } else{
-                    VStack(spacing: 0){
+                if mainViewModel.movies.isEmpty {
+                    VStack(spacing: 0) {
                         Text("No movies found")
                             .font(.title3)
                             .foregroundColor(.white)
@@ -93,11 +69,35 @@ struct MainView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .padding(.vertical, 12)
                     .background(Color.black)
+                } else {
+                    ScrollView {
+                        LazyVGrid(columns: adaptiveColumns, spacing: 16) {
+                            ForEach(mainViewModel.movies, id: \.id) { movie in
+                                NavigationLink(destination: MovieDetailView(movieID: movie.id)) {
+                                    MovieCard(movie: movie)
+                                        .onAppear {
+                                            Task {
+                                                await mainViewModel.fetchNextIfNeeded(currentMovie: movie)
+                                            }
+                                        }
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 16)
+                    }
+                    .background(Color.black.edgesIgnoringSafeArea(.all))
                 }
             }
             .navigationBarHidden(true)
+            .onAppear {
+                searchText = mainViewModel.lastSearchText ?? ""
+            }
             .task {
-                await mainViewModel.search(nil)
+                if mainViewModel.movies.isEmpty {
+                    await mainViewModel.search(nil)
+                }
             }
         }
     }

@@ -8,19 +8,17 @@ struct MovieDetailView: View {
     private let headerHeight: CGFloat = 250
     
     init(movieID: Int) {
-            self.movieID = movieID
-            
-            // Make Navigation Bar transparent
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithTransparentBackground()
-            appearance.backgroundColor = .clear
-            UINavigationBar.appearance().standardAppearance = appearance
-            UINavigationBar.appearance().scrollEdgeAppearance = appearance
-        }
+        self.movieID = movieID
+        // Transparent navigation bar
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+    }
     
     var body: some View {
         ZStack(alignment: .topLeading) {
-            // MARK: - Header image
             if let backdropPath = viewModel.movieDetail?.backdrop_path,
                let url = URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath)") {
                 imageView(url: url)
@@ -33,12 +31,9 @@ struct MovieDetailView: View {
                     .frame(maxWidth: .infinity)
             }
             
-            // MARK: - Scrollable content
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 8) {
-                    // Spacer to push content below header
-                    Color.clear
-                        .frame(height: headerHeight)
+                    Color.clear.frame(height: headerHeight)
                     
                     if viewModel.isLoadingDetails {
                         ProgressView()
@@ -54,20 +49,14 @@ struct MovieDetailView: View {
                     }
                 }
             }
-            
-            
         }
         .background(Color.black)
         .ignoresSafeArea(edges: .top)
         .navigationBarBackButtonHidden(true)
-        .task {
-            await fetchMovieData()
-        }
-        .toolbar{
+        .task { await fetchMovieData() }
+        .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                // MARK: - Back button
-                backBtnView
-                    .padding(.top, 8) // adjust for safe area
+                backBtnView.padding(.top, 8)
             }
         }
     }
@@ -91,11 +80,9 @@ struct MovieDetailView: View {
     func imageView(url: URL) -> some View {
         AsyncImage(url: url) { phase in
             switch phase {
-            case .empty:
-                ProgressView()
+            case .empty: ProgressView()
             case .success(let image):
-                image
-                    .resizable()
+                image.resizable()
                     .aspectRatio(contentMode: .fill)
                     .overlay(
                         LinearGradient(
@@ -106,20 +93,15 @@ struct MovieDetailView: View {
                         .frame(height: 100)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                     )
-            case .failure:
-                Color.gray
-            @unknown default:
-                EmptyView()
+            case .failure: Color.gray
+            @unknown default: EmptyView()
             }
         }
     }
     
     func textsView(movie: MovieDetails) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(movie.title ?? "")
-                .font(.title)
-                .bold()
-                .foregroundColor(.white)
+            Text(movie.title ?? "").font(.title).bold().foregroundColor(.white)
             
             if !movie.genres.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -151,14 +133,13 @@ struct MovieDetailView: View {
             .font(.subheadline)
             .foregroundColor(.gray)
             
-            Divider()
-                .background(Color.gray)
-                .padding(.vertical, 8)
+            Divider().background(Color.gray).padding(.vertical, 8)
             
             Text(movie.overview ?? "")
                 .foregroundColor(.white)
                 .font(.body)
                 .lineSpacing(4)
+            
             if !viewModel.cast.isEmpty {
                 castView(cast: viewModel.cast)
             }
@@ -172,47 +153,26 @@ struct MovieDetailView: View {
     
     func castView(cast: [CastMember]) -> some View {
         VStack(alignment: .leading) {
-            Text("Cast")
-                .font(.headline)
-                .foregroundColor(.white)
-                .padding(.bottom, 4)
-
+            Text("Cast").font(.headline).foregroundColor(.white).padding(.bottom, 4)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(cast) { member in
-                        VStack(alignment: .center) {
+                        VStack {
                             AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w185\(member.profile_path ?? "")")) { phase in
                                 switch phase {
-                                case .empty:
-                                    Color.gray
-                                        .frame(width: 100, height: 140)
-                                        .cornerRadius(8)
+                                case .empty: Color.gray.frame(width: 100, height: 140).cornerRadius(8)
                                 case .success(let image):
-                                    image
-                                        .resizable()
+                                    image.resizable()
                                         .scaledToFill()
                                         .frame(width: 100, height: 140)
                                         .clipped()
                                         .cornerRadius(8)
-                                case .failure:
-                                    Color.gray
-                                        .frame(width: 100, height: 140)
-                                        .cornerRadius(8)
-                                @unknown default:
-                                    EmptyView()
+                                case .failure: Color.gray.frame(width: 100, height: 140).cornerRadius(8)
+                                @unknown default: EmptyView()
                                 }
                             }
-
-                            Text(member.name ?? "")
-                                .font(.caption)
-                                .foregroundColor(.white)
-                                .frame(width: 100)
-                                .lineLimit(1)
-                            Text(member.character ?? "")
-                                .font(.caption2)
-                                .foregroundColor(.gray)
-                                .frame(width: 100)
-                                .lineLimit(1)
+                            Text(member.name ?? "").font(.caption).foregroundColor(.white).frame(width: 100).lineLimit(1)
+                            Text(member.character ?? "").font(.caption2).foregroundColor(.gray).frame(width: 100).lineLimit(1)
                         }
                     }
                 }
@@ -220,5 +180,4 @@ struct MovieDetailView: View {
         }
         .padding(.vertical, 8)
     }
-
 }

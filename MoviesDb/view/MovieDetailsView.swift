@@ -194,22 +194,24 @@ struct MovieDetailView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(cast) { member in
-                        VStack {
-                            AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w185\(member.profile_path ?? "")")) { phase in
-                                switch phase {
-                                case .empty: Color.gray.frame(width: 100, height: 140).cornerRadius(8)
-                                case .success(let image):
-                                    image.resizable()
-                                        .scaledToFill()
-                                        .frame(width: 100, height: 140)
-                                        .clipped()
-                                        .cornerRadius(8)
-                                case .failure: Color.gray.frame(width: 100, height: 140).cornerRadius(8)
-                                @unknown default: EmptyView()
+                        NavigationLink(destination: WebView(url: "https://themoviedb.org/person/\(member.id)")){
+                            VStack {
+                                AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w185\(member.profile_path ?? "")")) { phase in
+                                    switch phase {
+                                    case .empty: Color.gray.frame(width: 100, height: 140).cornerRadius(8)
+                                    case .success(let image):
+                                        image.resizable()
+                                            .scaledToFill()
+                                            .frame(width: 100, height: 140)
+                                            .clipped()
+                                            .cornerRadius(8)
+                                    case .failure: Color.gray.frame(width: 100, height: 140).cornerRadius(8)
+                                    @unknown default: EmptyView()
+                                    }
                                 }
+                                Text(member.name ?? "").font(.caption).foregroundColor(.white).frame(width: 100).lineLimit(1)
+                                Text(member.character ?? "").font(.caption2).foregroundColor(.gray).frame(width: 100).lineLimit(1)
                             }
-                            Text(member.name ?? "").font(.caption).foregroundColor(.white).frame(width: 100).lineLimit(1)
-                            Text(member.character ?? "").font(.caption2).foregroundColor(.gray).frame(width: 100).lineLimit(1)
                         }
                     }
                 }

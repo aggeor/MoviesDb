@@ -47,11 +47,6 @@
 			path = MoviesDbTests;
 			sourceTree = "<group>";
 		};
-		07DA24E12EA636ED008820F8 /* MoviesDbUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MoviesDbUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,7 +80,6 @@
 				07DA25452EA65BAD008820F8 /* Secrets.plist */,
 				07DA24C72EA636EC008820F8 /* MoviesDb */,
 				07DA24D72EA636ED008820F8 /* MoviesDbTests */,
-				07DA24E12EA636ED008820F8 /* MoviesDbUITests */,
 				07DA24C62EA636EC008820F8 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -160,9 +154,6 @@
 			);
 			dependencies = (
 				07DA24E02EA636ED008820F8 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				07DA24E12EA636ED008820F8 /* MoviesDbUITests */,
 			);
 			name = MoviesDbUITests;
 			packageProductDependencies = (

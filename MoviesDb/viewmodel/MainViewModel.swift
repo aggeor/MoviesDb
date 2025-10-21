@@ -11,6 +11,11 @@ class MainViewModel: ObservableObject {
     private var totalPages = 1
     var isLoading = false
     private var searchQuery: String? = nil
+    private var session: URLSession
+    
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
 
     func search(_ query: String?) async {
         lastSearchText = query
@@ -53,7 +58,7 @@ class MainViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await session.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) else {
                 print("Server error")
                 return

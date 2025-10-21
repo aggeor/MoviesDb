@@ -7,6 +7,11 @@ class MovieDetailViewModel: ObservableObject {
     @Published var isLoadingDetails = false
     @Published var isLoadingCredits = false
     @Published var cast: [CastMember] = []
+    private var session: URLSession
+    
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
 
     func fetchDetails(for movieID: Int) async {
         guard let url = URL(string: "https://api.themoviedb.org/3/movie/\(movieID)?api_key=\(apiKey)&language=en-US") else {
@@ -17,7 +22,7 @@ class MovieDetailViewModel: ObservableObject {
         isLoadingDetails = true
         defer { isLoadingDetails = false }
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await session.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) else {
                 print("Server error")
                 return
@@ -39,7 +44,7 @@ class MovieDetailViewModel: ObservableObject {
         isLoadingCredits = true
         defer { isLoadingCredits = false }
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await session.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) else {
                 print("Server error")
                 return

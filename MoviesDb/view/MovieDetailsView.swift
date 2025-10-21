@@ -37,6 +37,11 @@ struct MovieDetailView: View {
                             .foregroundColor(.white)
                             .frame(maxWidth: .infinity)
                     }
+                    
+                    if !viewModel.cast.isEmpty {
+                        castView(cast: viewModel.cast)
+                            .padding(.horizontal, 24)
+                    }
                 }
             }
         }
@@ -109,34 +114,10 @@ struct MovieDetailView: View {
             Text(movie.title ?? "").font(.title).bold().foregroundColor(.white)
             
             if !movie.genres.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(movie.genres, id: \.id) { genre in
-                            Text(genre.name)
-                                .font(.subheadline)
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(Color.yellow.opacity(0.3))
-                                .cornerRadius(10)
-                        }
-                    }
-                }
+                genresView(movie: movie)
             }
             
-            HStack(spacing: 8) {
-                if let releaseDate = movie.release_date {
-                    Text(formatDate(releaseDate))
-                }
-                if let runtime = movie.runtime {
-                    Text("• \(runtime) min")
-                }
-                if let rating = movie.vote_average, let voteCount = movie.vote_count {
-                    Text("• ⭐️ \(String(format: "%.1f", rating)) (\(voteCount))")
-                }
-            }
-            .font(.subheadline)
-            .foregroundColor(.gray)
+            infoView(movie: movie)
             
             
             if let status = movie.status {
@@ -145,28 +126,7 @@ struct MovieDetailView: View {
                     .foregroundColor(status=="Released" ? .green : .red)
             }
             
-            HStack(spacing: 8) {
-                NavigationLink(destination: WebView(url: "https://www.themoviedb.org/movie/\(movie.id)")){
-                    Text("TMDB")
-                        .font(.body)
-                        .padding(4)
-                        .foregroundColor(.white)
-                        .background(.blue.opacity(0.7))
-                        .cornerRadius(10)
-                }
-                
-                
-                if let imdbId = movie.imdb_id {
-                    NavigationLink(destination: WebView(url: "https://www.imdb.com/title/\(imdbId)")){
-                        Text("IMDb")
-                            .font(.body)
-                            .padding(4)
-                            .foregroundColor(.white)
-                            .background(.yellow.opacity(0.7))
-                            .cornerRadius(10)
-                    }
-                }
-            }
+            linksView(movie: movie)
             
             Divider().background(Color.gray).padding(.vertical, 8)
             
@@ -175,21 +135,74 @@ struct MovieDetailView: View {
                 .font(.body)
                 .lineSpacing(4)
             
-            Divider().background(Color.gray).padding(.vertical, 8)
-            if !viewModel.cast.isEmpty {
-                castView(cast: viewModel.cast)
-            }
         }
         .padding(.horizontal, 20)
         .padding(.top, 24)
-        .padding(.bottom, 40)
         .background(.black)
         .cornerRadius(32)
         .frame(width: UIScreen.main.bounds.width)
     }
     
+    func genresView(movie: MovieDetails) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(movie.genres, id: \.id) { genre in
+                    Text(genre.name)
+                        .font(.subheadline)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.yellow.opacity(0.3))
+                        .cornerRadius(10)
+                }
+            }
+        }
+    }
+    
+    func infoView(movie: MovieDetails) -> some View {
+        HStack(spacing: 8) {
+            if let releaseDate = movie.release_date {
+                Text(formatDate(releaseDate))
+            }
+            if let runtime = movie.runtime {
+                Text("• \(runtime) min")
+            }
+            if let rating = movie.vote_average, let voteCount = movie.vote_count {
+                Text("• ⭐️ \(String(format: "%.1f", rating)) (\(voteCount))")
+            }
+        }
+        .font(.subheadline)
+        .foregroundColor(.gray)
+    }
+    
+    func linksView(movie: MovieDetails) -> some View {
+        HStack(spacing: 8) {
+            NavigationLink(destination: WebView(url: "https://www.themoviedb.org/movie/\(movie.id)")){
+                Text("TMDB")
+                    .font(.body)
+                    .padding(4)
+                    .foregroundColor(.white)
+                    .background(.blue.opacity(0.7))
+                    .cornerRadius(10)
+            }
+            
+            
+            if let imdbId = movie.imdb_id {
+                NavigationLink(destination: WebView(url: "https://www.imdb.com/title/\(imdbId)")){
+                    Text("IMDb")
+                        .font(.body)
+                        .padding(4)
+                        .foregroundColor(.white)
+                        .background(.yellow.opacity(0.7))
+                        .cornerRadius(10)
+                }
+            }
+        }
+    }
+    
     func castView(cast: [CastMember]) -> some View {
         VStack(alignment: .leading) {
+            Divider().background(Color.gray).padding(.vertical, 8)
             Text("Cast").font(.headline).foregroundColor(.white).padding(.bottom, 4)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
@@ -217,6 +230,8 @@ struct MovieDetailView: View {
                 }
             }
         }
-        .padding(.vertical, 8)
+        .padding(.bottom, 8)
+        .padding(.horizontal, 20)
+        .frame(width: UIScreen.main.bounds.width)
     }
 }

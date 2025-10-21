@@ -2,7 +2,7 @@
 
 import Foundation
 
-// Helper to get the API key from the Info.plist, which inherits from the xcconfig
+/// Helper var to get the API key from the Secrets.plist
 var apiKey: String {
     guard let key = Bundle.main.object(forInfoDictionaryKey: "API_KEY") as? String else {
         fatalError("API_KEY is missing from Info.plist / Please create Secrets.plist with an API_KEY")
@@ -10,10 +10,13 @@ var apiKey: String {
     return key
 }
 
-
+/// Helper func to convert string date format to be more readable
+/// Takes date as yyyy-MM-dd and returns as MMMM dd, yyyy
+/// Ex. 09-03-2025 -> September 03, 2025
+/// If conversion fails returns the input date
 func formatDate(_ dateString: String) -> String {
     let inputFormatter = DateFormatter()
-    inputFormatter.dateFormat = "yyyy-MM-dd" // adjust if your string has time too
+    inputFormatter.dateFormat = "yyyy-MM-dd"
     inputFormatter.locale = Locale(identifier: "en_US_POSIX")
     
     let outputFormatter = DateFormatter()

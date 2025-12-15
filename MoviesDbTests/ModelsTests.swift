@@ -13,11 +13,11 @@ final class MovieModelsTests: XCTestCase {
         }
         """
         let data = json.data(using: .utf8)!
-        let movie = try JSONDecoder().decode(Movie.self, from: data)
+        let movie = try JSONDecoder().decode(APIMovie.self, from: data)
         
         XCTAssertEqual(movie.id, 1)
         XCTAssertEqual(movie.title, "Batman Begins")
-        XCTAssertEqual(movie.poster_path, "/poster.jpg")
+        XCTAssertEqual(movie.posterPath, "/poster.jpg")
     }
 
     @MainActor
@@ -41,13 +41,13 @@ final class MovieModelsTests: XCTestCase {
         }
         """
         let data = json.data(using: .utf8)!
-        let wrapper = try JSONDecoder().decode(MovieDataWrapper.self, from: data)
+        let wrapper = try JSONDecoder().decode(APIMovies.self, from: data)
         
         XCTAssertEqual(wrapper.page, 1)
-        XCTAssertEqual(wrapper.total_pages, 5)
+        XCTAssertEqual(wrapper.totalPages, 5)
         XCTAssertEqual(wrapper.results.count, 2)
         XCTAssertEqual(wrapper.results[0].title, "Batman Begins")
-        XCTAssertEqual(wrapper.results[1].poster_path, "/darkknight.jpg")
+        XCTAssertEqual(wrapper.results[1].posterPath, "/darkknight.jpg")
     }
 
     @MainActor
@@ -72,21 +72,21 @@ final class MovieModelsTests: XCTestCase {
         }
         """
         let data = json.data(using: .utf8)!
-        let movie = try JSONDecoder().decode(MovieDetails.self, from: data)
+        let movie = try JSONDecoder().decode(APIMovieDetails.self, from: data)
         
         XCTAssertEqual(movie.id, 1)
         XCTAssertEqual(movie.title, "Batman Begins")
         XCTAssertEqual(movie.genres.first?.name, "Action")
-        XCTAssertEqual(movie.release_date, "2005-06-15")
+        XCTAssertEqual(movie.releaseDate, "2005-06-15")
         XCTAssertEqual(movie.runtime, 140)
-        XCTAssertEqual(movie.vote_average, 8.2)
-        XCTAssertEqual(movie.vote_count, 1500)
+        XCTAssertEqual(movie.voteAverage, 8.2)
+        XCTAssertEqual(movie.voteCount, 1500)
         XCTAssertEqual(movie.status, "Released")
         XCTAssertEqual(movie.overview, "A young Bruce Wayne...")
-        XCTAssertEqual(movie.belongs_to_collection?.name, "Batman Collection")
-        XCTAssertEqual(movie.production_companies.first?.name, "Warner Bros")
-        XCTAssertEqual(movie.production_countries.first?.name, "United States")
-        XCTAssertEqual(movie.spoken_languages.first?.english_name, "English")
+        XCTAssertEqual(movie.belongsToCollection?.name, "Batman Collection")
+        XCTAssertEqual(movie.productionCompanies.first?.name, "Warner Bros")
+        XCTAssertEqual(movie.productionCountries.first?.name, "United States")
+        XCTAssertEqual(movie.spokenLanguages.first?.englishName, "English")
     }
 
     @MainActor
@@ -105,7 +105,7 @@ final class MovieModelsTests: XCTestCase {
         }
         """
         let data = json.data(using: .utf8)!
-        let credits = try JSONDecoder().decode(Credits.self, from: data)
+        let credits = try JSONDecoder().decode(APICredits.self, from: data)
         
         XCTAssertEqual(credits.id, 1)
         XCTAssertEqual(credits.cast.count, 1)
@@ -124,12 +124,12 @@ final class MovieModelsTests: XCTestCase {
         }
         """
         let data = json.data(using: .utf8)!
-        let cast = try JSONDecoder().decode(CastMember.self, from: data)
+        let cast = try JSONDecoder().decode(APICastMember.self, from: data)
         
         XCTAssertEqual(cast.id, 100)
         XCTAssertEqual(cast.name, "Christian Bale")
         XCTAssertEqual(cast.character, "Bruce Wayne")
-        XCTAssertEqual(cast.profile_path, "/bale.jpg")
+        XCTAssertEqual(cast.profilePath, "/bale.jpg")
     }
 
     @MainActor

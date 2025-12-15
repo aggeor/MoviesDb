@@ -15,7 +15,7 @@ struct MainView: View {
         NavigationView {
             VStack(spacing: 0) {
                 headerView
-                if mainViewModel.isLoading{
+                if mainViewModel.isLoading {
                     loadingView
                 } else if mainViewModel.movies.isEmpty {
                     emptyView
@@ -81,7 +81,7 @@ struct MainView: View {
                         .foregroundColor(.white)
                         .opacity(mainViewModel.isLoading ? 0.5 : 1)
                 }
-                .disabled(mainViewModel.isLoading) // prevent tapping while loading
+                .disabled(mainViewModel.isLoading)
             }
             .padding(.horizontal, 16)
         }
@@ -89,9 +89,8 @@ struct MainView: View {
         .background(Color.black)
     }
     
-    
-    var loadingView: some View{
-        ZStack{
+    var loadingView: some View {
+        ZStack {
             Color.black
                 .edgesIgnoringSafeArea(.all)
             ProgressView()
@@ -100,7 +99,7 @@ struct MainView: View {
         }
     }
     
-    var emptyView: some View{
+    var emptyView: some View {
         VStack(spacing: 0) {
             Text("No movies found")
                 .font(.title3)
@@ -114,7 +113,7 @@ struct MainView: View {
         .background(Color.black)
     }
     
-    var moviesView: some View{
+    var moviesView: some View {
         ScrollView {
             LazyVGrid(columns: adaptiveColumns, spacing: 16) {
                 ForEach(mainViewModel.movies, id: \.id) { movie in

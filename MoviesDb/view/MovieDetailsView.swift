@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MovieDetailView: View {
     let movieID: Int
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
     @StateObject private var viewModel = MovieDetailViewModel()
     @Environment(\.dismiss) private var dismiss
     
@@ -15,6 +16,9 @@ struct MovieDetailView: View {
         appearance.backgroundColor = .clear
         UINavigationBar.appearance().standardAppearance = appearance
         UINavigationBar.appearance().scrollEdgeAppearance = appearance
+    }
+    private var horizontalPadding: CGFloat {
+        verticalSizeClass == .regular ? 24 : 0
     }
     
     var body: some View {
@@ -31,7 +35,6 @@ struct MovieDetailView: View {
                             .frame(maxWidth: .infinity)
                     } else if let movie = viewModel.movieDetail {
                         textsView(movie: movie)
-                            .padding(.horizontal, 24)
                     } else {
                         Text("Failed to load movie details")
                             .foregroundColor(.white)
@@ -40,9 +43,15 @@ struct MovieDetailView: View {
                     
                     if !viewModel.cast.isEmpty {
                         castView(cast: viewModel.cast)
-                            .padding(.horizontal, 24)
                     }
                 }
+                .background(
+                    RoundedRectangle(cornerRadius: 32, style: .continuous)
+                        .fill(Color.black)
+                        .offset(y: headerHeight)
+                )
+                .padding(.horizontal, horizontalPadding)
+                .clipped()
             }
         }
         .background(Color.black)
@@ -84,7 +93,8 @@ struct MovieDetailView: View {
                 placeholderHeader
             }
         }
-        .frame(width: UIScreen.main.bounds.width,height: headerHeight)
+        .frame(maxWidth: .infinity)
+        .frame(height: headerHeight)
         .overlay(headerGradient)
         .clipped()
     }
@@ -138,9 +148,7 @@ struct MovieDetailView: View {
         }
         .padding(.horizontal, 20)
         .padding(.top, 24)
-        .background(.black)
-        .cornerRadius(32)
-        .frame(width: UIScreen.main.bounds.width)
+        .frame(maxWidth: .infinity)
     }
     
     func genresView(movie: MovieDetails) -> some View {
@@ -232,6 +240,5 @@ struct MovieDetailView: View {
         }
         .padding(.bottom, 8)
         .padding(.horizontal, 20)
-        .frame(width: UIScreen.main.bounds.width)
     }
 }

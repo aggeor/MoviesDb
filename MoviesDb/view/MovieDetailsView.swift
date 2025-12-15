@@ -65,7 +65,7 @@ struct MovieDetailView: View {
     
     var headerView: some View {
         ZStack {
-            if let imagePath = viewModel.movieDetail?.backdrop_path ?? viewModel.movieDetail?.poster_path,
+            if let imagePath = viewModel.movieDetail?.backdropPath ?? viewModel.movieDetail?.posterPath,
                let url = URL(string: "https://image.tmdb.org/t/p/w780\(imagePath)") {
                 AsyncImage(url: url) { phase in
                     switch phase {
@@ -161,13 +161,13 @@ struct MovieDetailView: View {
     
     func infoView(movie: MovieDetails) -> some View {
         HStack(spacing: 8) {
-            if let releaseDate = movie.release_date {
+            if let releaseDate = movie.releaseDate {
                 Text(formatDate(releaseDate))
             }
             if let runtime = movie.runtime {
                 Text("• \(runtime) min")
             }
-            if let rating = movie.vote_average, let voteCount = movie.vote_count {
+            if let rating = movie.voteAverage, let voteCount = movie.voteCount {
                 Text("• ⭐️ \(String(format: "%.1f", rating)) (\(voteCount))")
             }
         }
@@ -187,7 +187,7 @@ struct MovieDetailView: View {
             }
             
             
-            if let imdbId = movie.imdb_id {
+            if let imdbId = movie.imdbId {
                 NavigationLink(destination: WebView(url: "https://www.imdb.com/title/\(imdbId)")){
                     Text("IMDb")
                         .font(.body)
@@ -209,7 +209,7 @@ struct MovieDetailView: View {
                     ForEach(cast) { member in
                         NavigationLink(destination: WebView(url: "https://themoviedb.org/person/\(member.id)")){
                             VStack {
-                                AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w185\(member.profile_path ?? "")")) { phase in
+                                AsyncImage(url: URL(string: "https://image.tmdb.org/t/p/w185\(member.profilePath ?? "")")) { phase in
                                     switch phase {
                                     case .empty: Color.gray.frame(width: 100, height: 140).cornerRadius(8)
                                     case .success(let image):

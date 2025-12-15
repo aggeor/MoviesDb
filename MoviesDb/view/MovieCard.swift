@@ -9,7 +9,7 @@ struct MovieCard: View {
     
     var body: some View {
         ZStack{
-            if let posterPath = movie.poster_path,
+            if let posterPath = movie.posterPath,
                let url = URL(string: "https://image.tmdb.org/t/p/w500\(posterPath)") {
                 imageView(url:url)
             } else {
@@ -53,7 +53,7 @@ struct MovieCard: View {
                 .foregroundColor(.white)
                 .font(.system(size: 16, weight: .medium, design: .rounded))
                 .lineLimit(1)
-            if let releaseDate = movie.release_date{
+            if let releaseDate = movie.releaseDate{
                 Text(formatDate(releaseDate))
                     .foregroundColor(.white)
                     .font(.system(size: 12, weight: .medium, design: .rounded))

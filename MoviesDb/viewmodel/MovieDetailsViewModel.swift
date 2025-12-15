@@ -28,8 +28,8 @@ class MovieDetailViewModel: ObservableObject {
                 return
             }
 
-            let decoded = try JSONDecoder().decode(MovieDetails.self, from: data)
-            movieDetail = decoded
+            let decoded = try JSONDecoder().decode(APIMovieDetails.self, from: data)
+            movieDetail = MovieDetails(from: decoded)
         } catch {
             print("Error fetching movie details:", error)
         }
@@ -51,8 +51,8 @@ class MovieDetailViewModel: ObservableObject {
             }
 
             
-            let decoded = try JSONDecoder().decode(Credits.self, from: data)
-            cast = decoded.cast
+            let decoded = try JSONDecoder().decode(APICredits.self, from: data)
+            cast = Credits(from: decoded).cast
         } catch {
             print("Error fetching movie details:", error)
         }
